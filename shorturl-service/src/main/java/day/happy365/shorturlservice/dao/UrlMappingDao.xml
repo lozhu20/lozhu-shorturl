@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="day.happy365.shorturlservice.dao.UrlMappingDao">
+
+    <resultMap id="BaseResultMap" type="day.happy365.shorturlservice.entity.UrlMapping">
+        <id property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="url" column="url" jdbcType="VARCHAR"/>
+        <result property="shortUrl" column="short_url" jdbcType="VARCHAR"/>
+        <result property="expireTime" column="expire_time" jdbcType="TIMESTAMP"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="visitCount" column="visit_count" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,url,short_url,
+        expire_time,status,visit_count,create_time,
+        create_by,update_time,update_by
+    </sql>
+
+    <insert id="insert" parameterType="day.happy365.shorturlservice.entity.UrlMapping">
+        insert into public.t_url_mapping(url, short_url, expire_time, create_by, update_by)
+        values (#{url},
+                #{shortUrl},
+                #{expireTime},
+                #{createBy},
+                #{updateBy})
+    </insert>
+
+    <update id="updateStatusByExpireTime">
+        update public.t_url_mapping
+        set status = 1,
+            update_by = 'ExpiredURLCheckJob',
+            update_time = now()
+        where expire_time <![CDATA[ <= ]]> now()::timestamp
+    </update>
+
+    <update id="updateVisitCount">
+        update public.t_url_mapping
+        set visit_count = visit_count + 1,
+            update_by   = 'system',
+            update_time = now()
+        where id = #{id}
+    </update>
+
+    <select id="selectByShortUrl" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from public.t_url_mapping
+        where short_url = #{shortURL}
+        order by create_time desc
+        limit 1
+    </select>
+</mapper>

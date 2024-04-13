@@ -1,0 +1,25 @@
+server:
+  port: 8000
+spring:
+  application:
+    name: shorturl-service
+  datasource:
+    shorturl00:
+      jdbc-url: jdbc:postgresql://vm1:5440/shorturl
+      username: postgres
+      password: 12345678
+      driver-class-name: org.postgresql.Driver
+    shorturl01:
+      jdbc-url: jdbc:postgresql://vm1:5441/shorturl
+      username: postgres
+      password: 12345678
+      driver-class-name: org.postgresql.Driver
+    shorturl02:
+      jdbc-url: jdbc:postgresql://vm1:5442/shorturl
+      username: postgres
+      password: 12345678
+      driver-class-name: org.postgresql.Driver
+sys:
+  config:
+    domain: https://t.lozhu.happy365.day/
+    sign-check: OFF
