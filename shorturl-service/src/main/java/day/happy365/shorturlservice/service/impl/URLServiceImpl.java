@@ -29,7 +29,7 @@ public class URLServiceImpl implements URLService {
     @Value("${sys.config.domain}")
     private String sysDomain;
 
-    @Value("${sys.config.sign-check}")
+    @Value("${sys.config.sign}")
     private String signCheck;
 
     @Autowired
@@ -41,7 +41,7 @@ public class URLServiceImpl implements URLService {
     /**
      * 加签私钥
      */
-    private static final String SECRET_KEY = "Best wishes!";
+    private static final String SECRET_KEY = "Best";
 
     /**
      * hash 碰撞时的重试次数
@@ -83,7 +83,7 @@ public class URLServiceImpl implements URLService {
                 urlMappingDao.insert(urlMapping);
                 break;
             } catch (Exception e) {
-                log.error("", e);
+                log.error("【入库出错】错误信息: {}", e.getMessage());
                 log.error("【短链生成】短链入库失败，开始重试第 {} 次", (retryTime + 1));
 
                 retryTime++;
@@ -114,24 +114,6 @@ public class URLServiceImpl implements URLService {
     @TargetDataSource(value = "slave")
     @Override
     public Response<Void> visitShortURL(HttpServletResponse response, String shortURL) {
-//
-//        // https://t.lozhu.happy365.day/qewtet
-//        String[] split = URL.split("/");
-//        if (split.length < 2) {
-//            return ResponseUtil.buildResponse(ResultEnum.FAIL.getCode(), "该短链不合法，无法访问", null);
-//        }
-//        String domain = split[0];
-//        if (!sysDomain.contains(domain)) {
-//            return ResponseUtil.buildResponse(ResultEnum.FAIL.getCode(), "该短链不合法，无法访问", null);
-//        }
-//
-//        String shortURL = split[1];
-//        if (shortURL.length() < 6) {
-//            return ResponseUtil.buildResponse(ResultEnum.FAIL.getCode(), "该短链不合法，无法访问", null);
-//        }
-//
-//        shortURL = shortURL.substring(0, 6);
-//        log.info("【短链访问】提取到目标短链 {}", shortURL);
 
         log.info("【短链访问】要转发 shortURL 为 {}", shortURL);
 

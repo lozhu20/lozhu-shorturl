@@ -1,12 +1,12 @@
 <template>
   <div class="content">
     <div class="main-content">
-      <h2>Lozhu 的在线短链服务</h2>
-      <h4>累计生成短链: {{ historyData.length }}</h4>
+      <h2>🧡 lozhu的短链服务</h2>
+<!--      <h4>累计生成短链: {{ historyData.length }}</h4>-->
       <div class="input-group mb-3" style="margin-top: 40px;">
-        <input v-model="URL" type="text" class="form-control" placeholder="请输入链接，一次一个哦～">
-        <button v-on:click="shortenURL" class="btn btn-outline-secondary" type="button" id="button-addon2">🚀
-          生成短链</button>
+        <input v-model="URL" type="text" class="form-control" placeholder="请输入链接如 https://a.bc，一次一个哦～">
+        <button v-on:click="shortenURL" class="btn btn-outline-secondary" type="button" id="button-addon2">
+          🚀 生成短链</button>
       </div>
       <div v-if="errorMessage" class="alert alert-danger fade show" role="alert">
         {{ errorMessage }}
@@ -14,7 +14,7 @@
       <div v-if="warningMessage" class="alert alert-warning fade show" role="alert">
         {{ warningMessage }}
       </div>
-      <div style="margin-top: 50px;">
+      <div style="margin-top: 50px; height: 330px; overflow: auto">
         <table class="table table-hover">
           <thead>
             <tr>
@@ -42,7 +42,7 @@
     <div class="footer">
       <p>
         <span>
-          📝 <a :href="documentURL" target="_blank" rel="noopener noreferrer"> 项目文档</a>
+          📝 <a :href="documentURL" target="_blank" rel="noopener noreferrer"> 文档</a>
         </span>
         |
         <span>
@@ -55,12 +55,14 @@
         </span>
         <span>已勉强运行 {{ runningDays }} 天</span>
       </p>
-      <p>©️ 2024 lozhu 保留所有权利</p>
+      <p>©️ {{ this.copyright }} <a href="https://lozhu.happy365.day">lozhu</a> 保留所有权利</p>
     </div>
   </div>
 </template>
 
 <script>
+import {md5} from "js-md5";
+
 export default {
   name: 'Home',
   data() {
@@ -73,7 +75,9 @@ export default {
       runningDays: 0,
       historyData: [],
       documentURL: 'https://lozhu.happy365.day',
-      sourceCodeURL: 'https://lozhu.happy365.day'
+      sourceCodeURL: 'https://lozhu.happy365.day',
+      copyrightFromYear: 2024,
+      copyright: ''
     }
   },
   created() {
@@ -82,19 +86,28 @@ export default {
     let startTime = new Date(2024, 3, 12).getTime() / 1000
     let days = (nowTime - startTime) / (60 * 60 * 24)
     this.runningDays = parseInt(days + '')
+
+    let today = new Date()
+    let year = today.getFullYear()
+    if (year === this.copyrightFromYear) {
+      this.copyright = year
+    } else {
+      this.copyright = this.copyrightFromYear + ' - ' + year
+    }
   },
   methods: {
     shortenURL() {
       this.warningMessage = ''
       this.errorMessage = ''
       if (this.URL === '') {
-        this.warningMessage = '请先输入链接哦～'
+        this.warningMessage = '请先输入要原始链接～'
         return false
       }
+      let SECRET_KEY = 'Best'
       this.$axios.get('/api/v1/shortenURL', {
         params: {
           URL: this.URL,
-          sign: ''
+          sign: md5(SECRET_KEY + this.URL)
         }
       }).then((res) => {
         if (res.data && res.data.code === 0) {
